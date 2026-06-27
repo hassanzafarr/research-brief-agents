@@ -18,6 +18,7 @@ from graph.state import ResearchState
 from agents.researcher import researcher_node
 from agents.critic import critic_node
 from agents.writer import writer_node
+from agents.editor import editor_node
 
 
 def route_after_critic(state: ResearchState) -> str:
@@ -43,6 +44,7 @@ def build_graph():
     graph.add_node("researcher", researcher_node)
     graph.add_node("critic", critic_node)
     graph.add_node("writer", writer_node)
+    graph.add_node("editor", editor_node)
 
     # The entry point: every run starts at the researcher.
     graph.set_entry_point("researcher")
@@ -62,7 +64,11 @@ def build_graph():
         },
     )
 
-    # Once the Writer is done, the graph ends.
-    graph.add_edge("writer", END)
+    # Writer drafts, then hands off to the Editor for a final polish pass.
+    # Plain edges - no decision, the brief always goes through the Editor.
+    graph.add_edge("writer", "editor")
+
+    # Once the Editor is done, the graph ends.
+    graph.add_edge("editor", END)
 
     return graph.compile()

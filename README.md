@@ -67,7 +67,40 @@ utils/
   llm.py          - shared Claude client config
   search.py       - Tavily search wrapper
 main.py           - CLI entry point
+visualize.py      - renders the graph to graph.mmd / graph.png
 ```
+
+## Visualize the graph
+
+See the orchestration as a diagram (nodes + edges, with the conditional
+loop drawn as dotted lines):
+
+```bash
+python visualize.py
+```
+
+Writes `graph.mmd` (Mermaid source, always works) and `graph.png`
+(rendered via the mermaid.ink API, needs internet). Offline? Paste
+`graph.mmd` into [mermaid.live](https://mermaid.live).
+
+## Tracing with LangSmith
+
+Want to see the exact prompt and response for every node? Turn on
+LangSmith tracing - no code changes needed, it's all env vars:
+
+1. Get an API key at [smith.langchain.com](https://smith.langchain.com)
+2. In your `.env`, set:
+   ```
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_API_KEY=your_key_here
+   LANGCHAIN_PROJECT=research-brief-agents
+   ```
+3. Run as normal. Each run shows up in LangSmith with a trace tree -
+   one span per node (researcher / critic / writer), and inside each
+   you can see the full prompt sent to Claude and the raw response.
+
+This is the easiest way to debug WHY the Critic looped, or what the
+Researcher actually searched for on a retry.
 
 ## Things to try once it's running
 
@@ -82,5 +115,3 @@ main.py           - CLI entry point
 
 - Swap Tavily for LlamaIndex-based retrieval over a local document set
 - Add a fourth agent (fact-checker, tone-checker, etc.)
-- Visualize the graph with LangGraph's built-in graph drawing
-- Add LangSmith tracing to see exact prompts/responses per node

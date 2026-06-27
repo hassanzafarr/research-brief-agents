@@ -29,6 +29,7 @@ def main():
         "is_approved": False,
         "research_loops": 0,
         "final_brief": "",
+        "editor_notes": "",
     }
 
     print(f"{'='*60}")
@@ -41,6 +42,9 @@ def main():
     print("FINAL BRIEF")
     print(f"{'='*60}\n")
     print(final_state["final_brief"])
+
+    if final_state.get("editor_notes"):
+        print(f"\n[Editor changed] {final_state['editor_notes']}")
 
 
 if __name__ == "__main__":

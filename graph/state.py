@@ -38,4 +38,9 @@ class ResearchState(TypedDict):
     research_loops: int
 
     # The final output from the Writer agent. Empty until the last step.
+    # The Editor agent overwrites this with its polished version.
     final_brief: str
+
+    # The Editor agent's one-line note on what it changed during the
+    # final polish pass. Empty until the Editor runs.
+    editor_notes: str
