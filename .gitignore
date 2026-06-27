@@ -6,6 +6,6 @@ venv/
 .DS_Store
 *.egg-info/
 output/
-graph.png
-graph.mmd
+/graph.png
+/graph.mmd
 .streamlit/secrets.toml

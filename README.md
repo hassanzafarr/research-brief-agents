@@ -9,20 +9,23 @@ and feedback loops between agents.
 
 ## What it does
 
-Give it a topic. Three agents work together to produce a clean,
+Give it a topic. Four agents work together to produce a clean,
 structured brief:
 
 1. **Researcher** - searches the web and digests findings into notes
 2. **Critic** - reviews the notes and decides if they're thorough enough
-3. **Writer** - turns approved research into a final brief
+3. **Writer** - turns approved research into a structured draft
+4. **Editor** - polishes the draft for tone, clarity, and flow
 
 If the Critic isn't satisfied, it sends feedback back to the Researcher
 for another pass (capped at 3 loops to avoid runaway costs). This loop
 is the actual "orchestration" part - the control flow is decided at
 runtime based on data, not hardcoded as a straight line.
 
+![Agent graph](docs/graph.png)
+
 ```
-researcher -> critic -> [approved?] -> writer -> end
+researcher -> critic -> [approved?] -> writer -> editor -> end
                 |
                 +-- [not approved] -> back to researcher
 ```
@@ -109,6 +112,10 @@ Researcher actually searched for on a retry.
 
 There's a Streamlit UI so anyone can use it from a browser - no terminal.
 
+<!-- To add a screenshot: run the app, take a screenshot, save it as
+     docs/screenshot.png, then uncomment the line below. -->
+<!-- ![App screenshot](docs/screenshot.png) -->
+
 Run locally:
 
 ```bash
@@ -154,4 +161,9 @@ every user to paste their own keys from the start (costs you nothing).
 ## Possible next steps
 
 - Swap Tavily for LlamaIndex-based retrieval over a local document set
-- Add a fourth agent (fact-checker, tone-checker, etc.)
+- Add a fifth agent (fact-checker against the research notes, etc.)
+- Persist briefs to a database and add a history view
+
+## License
+
+MIT - see [LICENSE](LICENSE).
