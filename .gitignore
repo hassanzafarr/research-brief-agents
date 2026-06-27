@@ -8,3 +8,4 @@ venv/
 output/
 graph.png
 graph.mmd
+.streamlit/secrets.toml

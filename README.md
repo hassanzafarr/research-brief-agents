@@ -1,5 +1,8 @@
 # Research & Brief Generator (Multi-Agent Orchestration)
 
+**🚀 Live demo:** https://research-brief-agents-9saglp7dsgudsthnnvcxdh.streamlit.app
+(first brief is free — no signup needed)
+
 A small multi-agent system built with LangGraph to learn the core
 concepts of agent orchestration: shared state, conditional routing,
 and feedback loops between agents.
@@ -119,9 +122,25 @@ Deploy free on Streamlit Community Cloud:
    GitHub, and point it at this repo with `app.py` as the entry file.
 3. That's it - you get a public URL.
 
-No secrets to configure: each user pastes their own Anthropic + Tavily
-keys in the sidebar, so the app costs you nothing to host. Keys are used
-only for that session and never stored.
+### Free-trial keys (optional)
+
+The app supports a "one free brief, then bring your own keys" flow so a
+recruiter can click the live link and see it work instantly. To enable
+it, add YOUR keys as Streamlit secrets (never commit them):
+
+- Local: create `.streamlit/secrets.toml`:
+  ```toml
+  ANTHROPIC_API_KEY = "sk-ant-..."
+  TAVILY_API_KEY = "tvly-..."
+  ```
+- Streamlit Cloud: app → Settings → Secrets → paste the same two lines.
+
+With secrets set, each visitor gets one free brief on your keys, then is
+asked to paste their own. If you set NO secrets, the app simply requires
+every user to paste their own keys from the start (costs you nothing).
+
+> Note: the free-run limit is per browser session (a refresh resets it),
+> so set a spend cap in the Anthropic console if you expose this widely.
 
 ## Things to try once it's running
 
