@@ -1,0 +1,47 @@
+"""
+Run this to actually execute the agent system end to end.
+
+Usage:
+    python main.py "your research topic here"
+
+Watch the terminal output - every agent prints what it's doing, so you
+can see the loop happen in real time (Researcher -> Critic -> back to
+Researcher if rejected -> Critic again -> Writer once approved).
+"""
+
+import sys
+from graph.build import build_graph
+
+
+def main():
+    if len(sys.argv) < 2:
+        print('Usage: python main.py "your topic here"')
+        sys.exit(1)
+
+    topic = " ".join(sys.argv[1:])
+
+    graph = build_graph()
+
+    initial_state = {
+        "topic": topic,
+        "research_notes": [],
+        "critic_feedback": "",
+        "is_approved": False,
+        "research_loops": 0,
+        "final_brief": "",
+    }
+
+    print(f"{'='*60}")
+    print(f"Starting research on: {topic}")
+    print(f"{'='*60}")
+
+    final_state = graph.invoke(initial_state)
+
+    print(f"\n{'='*60}")
+    print("FINAL BRIEF")
+    print(f"{'='*60}\n")
+    print(final_state["final_brief"])
+
+
+if __name__ == "__main__":
+    main()
