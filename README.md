@@ -1,26 +1,24 @@
 # Research & Brief Generator (Multi-Agent Orchestration)
 
-**🚀 Live demo:** https://research-brief-agents-9saglp7dsgudsthnnvcxdh.streamlit.app
-(first brief is free — no signup needed)
+Live demo: https://research-brief-agents-9saglp7dsgudsthnnvcxdh.streamlit.app
+(first brief is free, no signup needed)
 
-A small multi-agent system built with LangGraph to learn the core
-concepts of agent orchestration: shared state, conditional routing,
-and feedback loops between agents.
+A multi-agent system built with LangGraph. Give it a topic and four agents
+work together to produce a structured brief, with a feedback loop between
+the research and review steps.
 
 ## What it does
 
-Give it a topic. Four agents work together to produce a clean,
-structured brief:
+Give it a topic. Four agents collaborate to produce the brief:
 
-1. **Researcher** - searches the web and digests findings into notes
-2. **Critic** - reviews the notes and decides if they're thorough enough
-3. **Writer** - turns approved research into a structured draft
-4. **Editor** - polishes the draft for tone, clarity, and flow
+1. Researcher - searches the web and digests findings into notes
+2. Critic - reviews the notes and decides if they're thorough enough
+3. Writer - turns approved research into a structured draft
+4. Editor - polishes the draft for tone, clarity, and flow
 
 If the Critic isn't satisfied, it sends feedback back to the Researcher
-for another pass (capped at 3 loops to avoid runaway costs). This loop
-is the actual "orchestration" part - the control flow is decided at
-runtime based on data, not hardcoded as a straight line.
+for another pass (capped at 3 loops). The control flow is decided at
+runtime based on state rather than hardcoded as a straight line.
 
 ![Agent graph](docs/graph.png)
 
@@ -30,12 +28,7 @@ researcher -> critic -> [approved?] -> writer -> editor -> end
                 +-- [not approved] -> back to researcher
 ```
 
-## Why this exists
-
-This is a learning project, built to understand agent orchestration
-concepts (shared state, conditional edges, loops, safety valves)
-hands-on rather than just reading framework docs. See `graph/build.py`
-for the actual orchestration logic - that's the file that matters most.
+The routing logic lives in `graph/build.py`.
 
 ## Setup
 
@@ -56,8 +49,8 @@ You'll need:
 python main.py "the impact of agent orchestration on small business AI adoption"
 ```
 
-Watch the terminal - each agent prints what it's doing, so you can see
-the research -> critique -> (maybe loop) -> write flow happen live.
+Each agent prints what it's doing, so the research -> critique ->
+(maybe loop) -> write -> edit flow is visible in the terminal.
 
 ## Project structure
 
@@ -66,33 +59,32 @@ agents/
   researcher.py   - searches and digests web findings
   critic.py       - reviews research, decides approve/retry
   writer.py       - synthesizes approved research into a brief
+  editor.py       - polishes the final brief
 graph/
   state.py        - shared state schema all agents read/write
-  build.py        - the actual graph wiring + routing logic
+  build.py        - graph wiring + routing logic
 utils/
-  llm.py          - shared Claude client config
+  llm.py          - Claude client config
   search.py       - Tavily search wrapper
 main.py           - CLI entry point
+app.py            - Streamlit web UI
 visualize.py      - renders the graph to graph.mmd / graph.png
 ```
 
 ## Visualize the graph
 
-See the orchestration as a diagram (nodes + edges, with the conditional
-loop drawn as dotted lines):
-
 ```bash
 python visualize.py
 ```
 
-Writes `graph.mmd` (Mermaid source, always works) and `graph.png`
-(rendered via the mermaid.ink API, needs internet). Offline? Paste
-`graph.mmd` into [mermaid.live](https://mermaid.live).
+Writes `graph.mmd` (Mermaid source) and `graph.png` (rendered via the
+mermaid.ink API, needs internet). Offline, paste `graph.mmd` into
+[mermaid.live](https://mermaid.live).
 
 ## Tracing with LangSmith
 
-Want to see the exact prompt and response for every node? Turn on
-LangSmith tracing - no code changes needed, it's all env vars:
+To inspect the exact prompt and response for every node, enable LangSmith
+tracing through environment variables (no code changes):
 
 1. Get an API key at [smith.langchain.com](https://smith.langchain.com)
 2. In your `.env`, set:
@@ -101,68 +93,39 @@ LangSmith tracing - no code changes needed, it's all env vars:
    LANGCHAIN_API_KEY=your_key_here
    LANGCHAIN_PROJECT=research-brief-agents
    ```
-3. Run as normal. Each run shows up in LangSmith with a trace tree -
-   one span per node (researcher / critic / writer), and inside each
-   you can see the full prompt sent to Claude and the raw response.
+3. Run as normal. Each run shows up as a trace tree, one span per node,
+   with the full prompt and response inside each.
 
-This is the easiest way to debug WHY the Critic looped, or what the
-Researcher actually searched for on a retry.
+## Web app
 
-## Web app (deploy it for others)
-
-There's a Streamlit UI so anyone can use it from a browser - no terminal.
-
-<!-- To add a screenshot: run the app, take a screenshot, save it as
-     docs/screenshot.png, then uncomment the line below. -->
-<!-- ![App screenshot](docs/screenshot.png) -->
-
-Run locally:
+A Streamlit UI so it can be used from a browser.
 
 ```bash
 streamlit run app.py
 ```
 
-Deploy free on Streamlit Community Cloud:
+Deploy on Streamlit Community Cloud:
 
-1. Push this repo to GitHub (already done if you cloned it).
+1. Push this repo to GitHub.
 2. Go to [share.streamlit.io](https://share.streamlit.io), sign in with
    GitHub, and point it at this repo with `app.py` as the entry file.
-3. That's it - you get a public URL.
 
 ### Free-trial keys (optional)
 
-The app supports a "one free brief, then bring your own keys" flow so a
-recruiter can click the live link and see it work instantly. To enable
-it, add YOUR keys as Streamlit secrets (never commit them):
+The app supports a "one free brief, then bring your own keys" flow. To
+enable it, add your keys as Streamlit secrets (never commit them):
 
 - Local: create `.streamlit/secrets.toml`:
   ```toml
   ANTHROPIC_API_KEY = "sk-ant-..."
   TAVILY_API_KEY = "tvly-..."
   ```
-- Streamlit Cloud: app → Settings → Secrets → paste the same two lines.
+- Streamlit Cloud: app -> Settings -> Secrets -> paste the same two lines.
 
 With secrets set, each visitor gets one free brief on your keys, then is
-asked to paste their own. If you set NO secrets, the app simply requires
-every user to paste their own keys from the start (costs you nothing).
-
-> Note: the free-run limit is per browser session (a refresh resets it),
-> so set a spend cap in the Anthropic console if you expose this widely.
-
-## Things to try once it's running
-
-- Lower `MAX_RESEARCH_LOOPS` in `agents/critic.py` to 1 and watch it
-  force-approve after just one pass
-- Add a `print(state)` inside any node to see the full state object
-  as it flows through the graph
-- Try a deliberately vague topic and see if the Critic actually catches
-  the gaps, or just rubber-stamps everything (LLM-as-judge isn't perfect)
-
-## Possible next steps
-
-- Swap Tavily for LlamaIndex-based retrieval over a local document set
-- Add a fifth agent (fact-checker against the research notes, etc.)
-- Persist briefs to a database and add a history view
+asked to paste their own. With no secrets, every user pastes their own
+keys from the start. The free-run limit is per browser session, so set a
+spend cap in the Anthropic console if you expose this widely.
 
 ## License
 

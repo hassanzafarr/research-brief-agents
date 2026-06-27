@@ -1,10 +1,5 @@
 """
-WRITER AGENT
-
-Job: take the APPROVED research notes and turn them into a clean,
-structured brief. This only runs once the Critic has signed off,
-so by the time this agent runs, the hard thinking is already done -
-this is mostly a formatting/synthesis task.
+Writer: turns the approved research notes into a structured brief.
 """
 
 from graph.state import ResearchState

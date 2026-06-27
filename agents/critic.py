@@ -1,13 +1,7 @@
 """
-CRITIC AGENT
-
-Job: look at everything the Researcher has found SO FAR (all loops combined)
-and decide: is this good enough to write a brief from, or is something
-important missing?
-
-This is the agent that makes the system a LOOP instead of a straight line.
-It's also where you'll see the safety valve in action - even if the Critic
-is never satisfied, we cap the loops so the graph can't run forever.
+Critic: reviews all research gathered so far and decides whether it's
+good enough to write from. Caps the number of loops so the graph can't
+run forever.
 """
 
 from graph.state import ResearchState
@@ -24,9 +18,7 @@ def critic_node(state: ResearchState) -> dict:
 
     print(f"[Critic] Reviewing research after {loop_count} pass(es)")
 
-    # Safety valve: force approval if we've looped too many times,
-    # regardless of what the Critic thinks. Prevents infinite loops
-    # and runaway API costs.
+    # Force approval once we hit the loop cap, to avoid running forever.
     if loop_count >= MAX_RESEARCH_LOOPS:
         print(f"[Critic] Hit max loops ({MAX_RESEARCH_LOOPS}), forcing approval")
         return {"is_approved": True, "critic_feedback": ""}

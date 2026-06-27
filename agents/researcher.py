@@ -1,14 +1,7 @@
 """
-RESEARCHER AGENT
-
-Job: given a topic (and optionally, feedback from a previous critique),
-go search the web and gather relevant findings.
-
-This is the simplest agent conceptually, but pay attention to one thing:
-it behaves DIFFERENTLY on the first run versus a retry. On a retry, it
-needs to read the Critic's feedback and search for the SPECIFIC gaps
-that were flagged, not just redo the same generic search. That's what
-makes this a real feedback loop instead of a dumb retry.
+Researcher: searches the web for a topic and digests results into notes.
+On a retry it reads the Critic's feedback and targets the flagged gaps
+instead of repeating the same search.
 """
 
 from graph.state import ResearchState
@@ -27,8 +20,7 @@ def researcher_node(state: ResearchState) -> dict:
     print(f"\n[Researcher] Pass #{loop_count + 1} on topic: {topic}")
 
     if feedback:
-        # This is a retry. Ask the LLM to turn the critic's feedback
-        # into a sharper, more targeted search query.
+        # Retry: turn the critic's feedback into a targeted query.
         print(f"[Researcher] Addressing feedback: {feedback}")
         query_prompt = (
             f"Topic: {topic}\n"
@@ -47,8 +39,7 @@ def researcher_node(state: ResearchState) -> dict:
 
     raw_results = web_search(search_query)
 
-    # Ask the LLM to digest the raw search results into clean notes,
-    # rather than dumping unprocessed search junk into the state.
+    # Digest raw results into clean notes instead of storing them as-is.
     digest_prompt = (
         f"Topic: {topic}\n"
         f"Raw search results:\n{raw_results}\n\n"
@@ -61,6 +52,6 @@ def researcher_node(state: ResearchState) -> dict:
     print(f"[Researcher] Found notes:\n{notes}\n")
 
     return {
-        "research_notes": [notes],  # operator.add appends this to the list
+        "research_notes": [notes],  # appended via operator.add
         "research_loops": loop_count + 1,
     }

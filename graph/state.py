@@ -1,14 +1,7 @@
 """
-This is the single most important file to understand in the whole project.
-
-In LangGraph, agents don't call each other directly. Instead, they all read
-from and write to one shared `state` object that flows through the graph.
-Think of it like a clipboard that gets passed from person to person, each
-one reading what's on it and adding their own notes before passing it along.
-
-Every node (agent) in the graph receives this state, does its work, and
-returns a dict with the fields it wants to UPDATE. LangGraph merges that
-into the running state automatically.
+Shared state schema. Each node receives this state, does its work, and
+returns a dict of the fields it wants to update; LangGraph merges those
+into the running state.
 """
 
 from typing import TypedDict, List, Annotated
@@ -16,31 +9,24 @@ import operator
 
 
 class ResearchState(TypedDict):
-    # The original topic the user asked about. Set once, never changes.
+    # The topic to research. Set once.
     topic: str
 
-    # Raw findings gathered by the Researcher agent.
-    # Annotated with operator.add means: when multiple updates come in,
-    # APPEND to the list instead of overwriting it. This matters because
-    # the Researcher might run more than once (after Critic sends it back).
+    # Findings from the Researcher. operator.add appends across passes
+    # instead of overwriting, since the Researcher can run more than once.
     research_notes: Annotated[List[str], operator.add]
 
-    # Feedback from the Critic agent on the latest research pass.
-    # This is what tells the Researcher "you're not done yet, look into X."
+    # Critic feedback on the latest pass.
     critic_feedback: str
 
-    # Whether the Critic thinks the research is good enough to write from.
-    # This is the field the ROUTER reads to decide: loop back, or move on?
+    # Whether the research is good enough to write from. Read by the router.
     is_approved: bool
 
-    # How many research loops we've done. Critical safety valve -
-    # without this, a stubborn Critic could loop forever and burn your API budget.
+    # Number of research loops so far; caps retries.
     research_loops: int
 
-    # The final output from the Writer agent. Empty until the last step.
-    # The Editor agent overwrites this with its polished version.
+    # Final brief. Written by the Writer, then overwritten by the Editor.
     final_brief: str
 
-    # The Editor agent's one-line note on what it changed during the
-    # final polish pass. Empty until the Editor runs.
+    # Editor's one-line note on what it changed.
     editor_notes: str

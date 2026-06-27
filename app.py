@@ -1,29 +1,13 @@
 """
-Streamlit web UI for the multi-agent research brief generator.
+Streamlit web UI.
 
-Run locally:
     streamlit run app.py
 
-Deploy:
-    Push to GitHub, then connect the repo at https://share.streamlit.io
-    (Streamlit Community Cloud).
-
-Key model ("one free hit, then bring your own"):
-    - The host puts their own keys in Streamlit secrets (see README).
-    - Each visitor gets ONE free brief generated on the host's keys, so a
-      recruiter can click and see it work with zero setup.
-    - After that free run, the visitor must paste their own Anthropic +
-      Tavily keys to keep going.
-    - If a visitor pastes their own keys, those are used right away with no
-      free-run limit.
-
-    Caveat: the free-run count lives in the browser session, so a refresh
-    resets it. Fine for a demo; set a spend cap in the Anthropic console
-    if you expose this widely.
-
-Design note: the agent code reads API keys from environment variables at
-call time. So this file sets os.environ from whichever keys apply BEFORE
-running the graph (imported lazily inside run_research).
+Key handling: a visitor gets one free brief on the host's keys (set as
+Streamlit secrets), then is asked to paste their own. Visitor keys are
+used right away with no limit. The free-run count is per browser session.
+Keys are written to os.environ before the graph runs (imported lazily in
+run_research) since the agents read them at call time.
 """
 
 import os
@@ -62,10 +46,10 @@ def run_research(topic: str):
     }
 
     labels = {
-        "researcher": "🔍 Researcher — searching and digesting findings",
-        "critic": "⚖️ Critic — reviewing research quality",
-        "writer": "✍️ Writer — drafting the brief",
-        "editor": "✨ Editor — polishing the final brief",
+        "researcher": "Researcher: searching and digesting findings",
+        "critic": "Critic: reviewing research quality",
+        "writer": "Writer: drafting the brief",
+        "editor": "Editor: polishing the final brief",
     }
 
     final_brief = ""
@@ -102,17 +86,16 @@ free_available = host_anthropic and host_tavily and not st.session_state.free_us
 
 # ---- UI ----
 
-st.title("🔎 Research Brief Generator")
+st.title("Research Brief Generator")
 st.markdown(
-    "Give it a topic. Four AI agents — **Researcher → Critic → Writer → "
-    "Editor** — collaborate to produce a clean, structured brief. "
-    "Built with LangGraph."
+    "Give it a topic. Four agents (Researcher, Critic, Writer, Editor) "
+    "collaborate to produce a structured brief. Built with LangGraph."
 )
 
 if free_available:
     st.info(
-        "👋 First brief is on me — just enter a topic and hit Generate. "
-        "After that, add your own free API keys in the sidebar to keep going."
+        "First brief is free. Enter a topic and hit Generate. "
+        "After that, add your own API keys in the sidebar to keep going."
     )
 
 with st.sidebar:
@@ -146,8 +129,8 @@ if st.button("Generate brief", type="primary"):
         st.error("Enter a topic.")
     elif not use_anthropic:
         st.warning(
-            "Your free brief is used up. Add your own Anthropic + Tavily "
-            "keys in the sidebar to keep generating — both are free to get."
+            "Your free brief is used up. Add your own Anthropic and Tavily "
+            "keys in the sidebar to keep generating (both are free to get)."
         )
     else:
         os.environ["ANTHROPIC_API_KEY"] = use_anthropic

@@ -1,18 +1,6 @@
 """
-EDITOR AGENT
-
-Job: take the Writer's draft brief and do a final polish pass - tighten the
-tone, fix awkward phrasing, enforce consistency, and cut any remaining bloat.
-
-This is the LAST agent in the pipeline. The Writer turns research into a
-structured draft; the Editor makes that draft read like a human wrote it on
-a good day. It only ever runs once, after the Writer has signed off, so it
-doesn't loop - it's a straight pass-through that overwrites `final_brief`
-with the cleaned-up version.
-
-Swap the prompt below to change what this agent enforces (e.g. a fact-checker
-would instead compare claims against the research notes, a tone-checker would
-enforce a target voice). The wiring in graph/build.py stays the same.
+Editor: final polish pass over the Writer's draft. Improves tone, clarity,
+and flow without adding new claims, and overwrites final_brief.
 """
 
 from graph.state import ResearchState
@@ -42,7 +30,7 @@ def editor_node(state: ResearchState) -> dict:
     response = llm.invoke([HumanMessage(content=edit_prompt)])
     text = response.content.strip()
 
-    # Split the polished brief from the editor's note about what changed.
+    # Separate the polished brief from the editor's note.
     note = ""
     if "EDITOR_NOTE:" in text:
         polished, note = text.split("EDITOR_NOTE:", 1)

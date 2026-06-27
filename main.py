@@ -1,12 +1,8 @@
 """
-Run this to actually execute the agent system end to end.
+CLI entry point.
 
 Usage:
     python main.py "your research topic here"
-
-Watch the terminal output - every agent prints what it's doing, so you
-can see the loop happen in real time (Researcher -> Critic -> back to
-Researcher if rejected -> Critic again -> Writer once approved).
 """
 
 import sys
