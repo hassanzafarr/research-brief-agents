@@ -16,13 +16,15 @@ enforce a target voice). The wiring in graph/build.py stays the same.
 """
 
 from graph.state import ResearchState
-from utils.llm import llm
+from utils.llm import get_llm
 from langchain_core.messages import HumanMessage
 
 
 def editor_node(state: ResearchState) -> dict:
     topic = state["topic"]
     draft = state["final_brief"]
+
+    llm = get_llm()
 
     print(f"[Editor] Polishing brief on: {topic}")
 

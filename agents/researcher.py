@@ -12,7 +12,7 @@ makes this a real feedback loop instead of a dumb retry.
 """
 
 from graph.state import ResearchState
-from utils.llm import llm
+from utils.llm import get_llm
 from utils.search import web_search
 from langchain_core.messages import HumanMessage
 
@@ -21,6 +21,8 @@ def researcher_node(state: ResearchState) -> dict:
     topic = state["topic"]
     feedback = state.get("critic_feedback", "")
     loop_count = state.get("research_loops", 0)
+
+    llm = get_llm()
 
     print(f"\n[Researcher] Pass #{loop_count + 1} on topic: {topic}")
 

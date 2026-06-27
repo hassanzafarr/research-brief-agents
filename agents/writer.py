@@ -8,7 +8,7 @@ this is mostly a formatting/synthesis task.
 """
 
 from graph.state import ResearchState
-from utils.llm import llm
+from utils.llm import get_llm
 from langchain_core.messages import HumanMessage
 
 
@@ -17,6 +17,8 @@ def writer_node(state: ResearchState) -> dict:
     all_notes = "\n\n".join(state["research_notes"])
 
     print(f"[Writer] Drafting final brief on: {topic}")
+
+    llm = get_llm()
 
     write_prompt = (
         f"Topic: {topic}\n"

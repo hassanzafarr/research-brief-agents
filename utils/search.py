@@ -11,16 +11,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
-
 
 def web_search(query: str, max_results: int = 5) -> str:
     """
     Runs a web search and returns a formatted string of results.
     Returning a plain string (not raw JSON) keeps things simple for the
     LLM to read - it doesn't need to parse structured data, just read text.
+
+    The Tavily client is built here (per call) rather than at import, so
+    the web UI can serve many users each using their own pasted key.
     """
-    response = _client.search(query=query, max_results=max_results)
+    client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+    response = client.search(query=query, max_results=max_results)
 
     formatted = []
     for i, result in enumerate(response.get("results", []), 1):

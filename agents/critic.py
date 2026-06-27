@@ -11,7 +11,7 @@ is never satisfied, we cap the loops so the graph can't run forever.
 """
 
 from graph.state import ResearchState
-from utils.llm import llm
+from utils.llm import get_llm
 from langchain_core.messages import HumanMessage
 
 MAX_RESEARCH_LOOPS = 3
@@ -30,6 +30,8 @@ def critic_node(state: ResearchState) -> dict:
     if loop_count >= MAX_RESEARCH_LOOPS:
         print(f"[Critic] Hit max loops ({MAX_RESEARCH_LOOPS}), forcing approval")
         return {"is_approved": True, "critic_feedback": ""}
+
+    llm = get_llm()
 
     review_prompt = (
         f"Topic: {topic}\n"

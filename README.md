@@ -102,6 +102,27 @@ LangSmith tracing - no code changes needed, it's all env vars:
 This is the easiest way to debug WHY the Critic looped, or what the
 Researcher actually searched for on a retry.
 
+## Web app (deploy it for others)
+
+There's a Streamlit UI so anyone can use it from a browser - no terminal.
+
+Run locally:
+
+```bash
+streamlit run app.py
+```
+
+Deploy free on Streamlit Community Cloud:
+
+1. Push this repo to GitHub (already done if you cloned it).
+2. Go to [share.streamlit.io](https://share.streamlit.io), sign in with
+   GitHub, and point it at this repo with `app.py` as the entry file.
+3. That's it - you get a public URL.
+
+No secrets to configure: each user pastes their own Anthropic + Tavily
+keys in the sidebar, so the app costs you nothing to host. Keys are used
+only for that session and never stored.
+
 ## Things to try once it's running
 
 - Lower `MAX_RESEARCH_LOOPS` in `agents/critic.py` to 1 and watch it
